@@ -22,7 +22,6 @@ var ErrInvalidString = errors.New("invalid string")
 func Unpack(s string) (string, error) {
 	var (
 		prev    = DIGIT
-		buffer  []pair
 		sb      strings.Builder
 		p       pair
 		isEsc   bool
@@ -33,7 +32,7 @@ func Unpack(s string) (string, error) {
 		return "", nil
 	}
 
-	buffer = make([]pair, 0)
+	buffer := make([]pair, 0)
 	for _, r := range s {
 		isEsc = r == '\\'
 		isDigit = unicode.IsDigit(r)
