@@ -7,7 +7,7 @@ import (
 )
 
 // Change to true if needed.
-var taskWithAsteriskIsCompleted = false
+var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -43,9 +43,34 @@ var text = `Как видите, он  спускается  по  лестни�
 	посидеть у огня и послушать какую-нибудь интересную сказку.
 		В этот вечер...`
 
+var text2 = `
+	Какая боль! Какая боль!
+	Аргентина-Ямайка - 5:0
+	Какая боль! Какая боль!
+	Аргентина-Ямайка - 5:0
+`
+
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
 		require.Len(t, Top10(""), 0)
+	})
+
+	t.Run("only special symbols", func(t *testing.T) {
+		require.Len(t, Top10(", - =,! @##"), 0)
+	})
+
+	t.Run("special symbols in the middle of a word are ignored", func(t *testing.T) {
+		expected := []string{
+			"боль",
+			"какая",
+			"5:0",
+			"аргентина-ямайка",
+		}
+		require.Equal(t, expected, Top10(text2))
+	})
+
+	t.Run("special symbols trimmed from front", func(t *testing.T) {
+		require.Equal(t, []string{"vas"}, Top10("¿Vas?"))
 	})
 
 	t.Run("positive test", func(t *testing.T) {
@@ -79,4 +104,10 @@ func TestTop10(t *testing.T) {
 			require.Equal(t, expected, Top10(text))
 		}
 	})
+}
+
+func BenchmarkTop10(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = Top10(text)
+	}
 }
